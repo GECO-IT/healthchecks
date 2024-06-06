@@ -119,6 +119,7 @@
                 {{site_name}}
             </div>
             {% endif %}
+            
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             {% if project %}
@@ -147,27 +148,34 @@
             {% endif %}
             <ul class="nav navbar-nav navbar-right">
                 <li class="searchbar">
-                    <li class="searchbar">
-                        {% if page == 'checks' %}
+                    {% if page == 'projects' %}
+                    <input 
+                        id="search" 
+                        type="text" 
+                        placeholder="Filter by project name&hellip;" 
+                        class="form-control" 
+                        value="">
+                    {% endif %}
+                    {% if page == 'checks' %}
                             <input 
                             id="search" 
                             type="text" 
                             placeholder="Filter by check&hellip;" 
                             class="form-control hidden-xs" 
                             value="">
-                        {% endif %}
+                    {% endif %}
                 </li>
                 <li>
-                <ul id="global-links" class="nav navbar-nav navbar-right">
-                    {% if show_pricing %}
-                    <li {% if page == 'pricing' %} class="active" {% endif %}>
-                        {% if project %}
-                        <a href="{% url 'hc-p-pricing' project.code %}">Pricing</a>
-                        {% else %}
-                        <a href="{% url 'hc-pricing' %}">Pricing</a>
-                        {% endif %}
-                    </li>
+            <ul id="global-links" class="nav navbar-nav navbar-right">
+                {% if show_pricing %}
+                <li {% if page == 'pricing' %} class="active" {% endif %}>
+                    {% if project %}
+                    <a href="{% url 'hc-p-pricing' project.code %}">Pricing</a>
+                    {% else %}
+                    <a href="{% url 'hc-pricing' %}">Pricing</a>
                     {% endif %}
+                </li>
+                {% endif %}
 
                     <li {% if page == 'docs' %} class="active" {% endif %}>
                         <a href="{% url 'hc-docs' %}">Docs</a>
