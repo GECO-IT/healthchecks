@@ -260,12 +260,14 @@
                         <p>You do not have any projects. Create one!</p>
                     {% endif %}
 
+                    {% if not true_rw %}
                     <a
                         id="create-project"
                         href="#"
                         class="btn btn-default pull-right"
                         data-toggle="modal"
                         data-target="#add-project-modal">Create a New Project</a>
+                    {% endif %}
             </div>
 
             {% if left_project %}
