@@ -85,6 +85,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
+
             <a id="base-url" class="navbar-brand" href="{% url 'hc-index' %}">
                 <img
                     id="logo"
@@ -144,50 +145,33 @@
             {% endif %}
             <ul class="nav navbar-nav navbar-right">
                 <li class="searchbar">
-                    {% if page == 'projects' %}
-                    <input 
-                        id="search" 
-                        type="text" 
-                        placeholder="Filter by project name&hellip;" 
-                        class="form-control" 
-                        value="">
-                    {% endif %}
-                    {% if page == 'checks' %}
-                            <input 
-                            id="search" 
-                            type="text" 
-                            placeholder="Filter by check&hellip;" 
-                            class="form-control hidden-xs" 
-                            value="">
-                    {% endif %}
-                </li>
                 <li>
-            <ul id="global-links" class="nav navbar-nav navbar-right">
-                {% if show_pricing %}
-                <li {% if page == 'pricing' %} class="active" {% endif %}>
-                    {% if project %}
-                    <a href="{% url 'hc-p-pricing' project.code %}">Pricing</a>
-                    {% else %}
-                    <a href="{% url 'hc-pricing' %}">Pricing</a>
-                    {% endif %}
-                </li>
-                {% endif %}
-                {% if show_doc %}
-                <li {% if page == 'docs' %} class="active" {% endif %}>
-                    <a href="{% url 'hc-docs' %}">Docs</a>
-                </li>
-                {% endif %}
-                {% if request.user.is_authenticated %}
-                <li class="dropdown">
-                    <a id="nav-email" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">
-                        Account
-                        <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        {% if request.user.is_superuser %}
-                            <li><a href="{% url 'admin:index' %}">Site Administration</a></li>
-                            <li role="separator" class="divider"></li>
+                <ul id="global-links" class="nav navbar-nav navbar-right">
+                    {% if show_pricing %}
+                    <li {% if page == 'pricing' %} class="active" {% endif %}>
+                        {% if project %}
+                        <a href="{% url 'hc-p-pricing' project.code %}">Pricing</a>
+                        {% else %}
+                        <a href="{% url 'hc-pricing' %}">Pricing</a>
                         {% endif %}
+                    </li>
+                    {% endif %}
+
+                    <li {% if page == 'docs' %} class="active" {% endif %}>
+                        <a href="{% url 'hc-docs' %}">Docs</a>
+                    </li>
+
+                    {% if request.user.is_authenticated %}
+                    <li class="dropdown">
+                        <a id="nav-email" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">
+                            Account
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            {% if request.user.is_superuser %}
+                                <li><a href="{% url 'admin:index' %}">Site Administration</a></li>
+                                <li role="separator" class="divider"></li>
+                            {% endif %}
 
                         <li class="dropdown-header">{{ request.user.email }}</li>
 
