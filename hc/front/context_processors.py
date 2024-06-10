@@ -12,3 +12,6 @@ def branding(request: HttpRequest) -> dict[str, str | None]:
 
 def show_documentation(request: HttpRequest)-> dict[str, bool]:
     return {'show_doc': settings.SHOW_DOC}
+
+def show_footer(request: HttpRequest)-> dict[str, bool]:
+    return {'show_footer': settings.SHOW_FOOTER}
