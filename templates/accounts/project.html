@@ -500,9 +500,22 @@
                                 modify anything. Cannot access project's API keys.
                             </span>
                         </label>
+                        <label class="radio-container">
+                            <input
+                                type="radio"
+                                name="role"
+                                value="t"
+                                checked>
+                            <span class="radiomark"></span>
+                            True Read-only
+                            <span class="help-block">
+                                Same as Read-only but can't create projects.
+                                (if checked, they can't create projects even if 
+                                they has another role on another project)
+                            </span>
+                        </label>
                         </div>
                     </div>
-
 
 
                 </div>

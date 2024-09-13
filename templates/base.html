@@ -86,24 +86,6 @@
                 <span class="icon-bar"></span>
             </button>
 
-            {% if request.user.is_authenticated and project %}
-            <div id="project-menu" class="navbar-brand">
-                <div class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">
-                        {{ project }}
-                        <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a id="base-url" href="{% url 'hc-index' %}">All Projects</a></li>
-                        <li id="projects-divider" role="separator" class="divider"></li>
-                        <li role="separator" class="divider"></li>
-                        <li>
-                            <a  href="#" data-toggle="modal"  data-target="#add-project-modal">New Project&hellip;</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            {% else %}
             <a id="base-url" class="navbar-brand" href="{% url 'hc-index' %}">
                 <img
                     id="logo"
@@ -115,7 +97,26 @@
                     {% endif %}
                     alt="{{ site_name }}">
             </a>
+            {% if request.user.is_authenticated and project %}
+            <div id="project-menu" class="navbar-brand">
+                <div class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">
+                        {{ project }}
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a id="base-url" href="{% url 'hc-index' %}">All Projects</a></li>
+                        <li id="projects-divider" role="separator" class="divider"></li>
+                    </ul>
+                </div>
+            </div>
             {% endif %}
+            {% if not project %}
+            <div class="navbar-brand">
+                {{site_name}}
+            </div>
+            {% endif %}
+            
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             {% if project %}
@@ -142,52 +143,54 @@
                 </li>
             </ul>
             {% endif %}
-
-            <ul id="global-links" class="nav navbar-nav navbar-right">
-                {% if show_pricing %}
-                <li {% if page == 'pricing' %} class="active" {% endif %}>
-                    {% if project %}
-                    <a href="{% url 'hc-p-pricing' project.code %}">Pricing</a>
-                    {% else %}
-                    <a href="{% url 'hc-pricing' %}">Pricing</a>
-                    {% endif %}
-                </li>
-                {% endif %}
-
-                <li {% if page == 'docs' %} class="active" {% endif %}>
-                    <a href="{% url 'hc-docs' %}">Docs</a>
-                </li>
-
-                {% if request.user.is_authenticated %}
-                <li class="dropdown">
-                    <a id="nav-email" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">
-                        Account
-                        <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        {% if request.user.is_superuser %}
-                            <li><a href="{% url 'admin:index' %}">Site Administration</a></li>
-                            <li role="separator" class="divider"></li>
-                        {% endif %}
-
-                    <li class="dropdown-header">{{ request.user.email }}</li>
-
-                    <li>
-                        <a href="{% url 'hc-profile' %}">Account Settings</a>
-                    </li>
-                    <li>
-                        <form method="post" action="{% url 'hc-logout' %}">
-                            {% csrf_token %}
-                            <button class="btn btn-link" type="submit">Log Out</button>
-                        </form>
-                    </li>
-                    </ul>
-                </li>
-                {% elif page != "login" %}
+            <ul class="nav navbar-nav navbar-right">
+                <li class="searchbar">
                 <li>
-                    <a href="{% url 'hc-login' %}">Sign In</a>
-                </li>
-                {% endif %}
+                <ul id="global-links" class="nav navbar-nav navbar-right">
+                    {% if show_pricing %}
+                    <li {% if page == 'pricing' %} class="active" {% endif %}>
+                        {% if project %}
+                        <a href="{% url 'hc-p-pricing' project.code %}">Pricing</a>
+                        {% else %}
+                        <a href="{% url 'hc-pricing' %}">Pricing</a>
+                        {% endif %}
+                    </li>
+                    {% endif %}
+
+                    <li {% if page == 'docs' %} class="active" {% endif %}>
+                        <a href="{% url 'hc-docs' %}">Docs</a>
+                    </li>
+
+                    {% if request.user.is_authenticated %}
+                    <li class="dropdown">
+                        <a id="nav-email" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">
+                            Account
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            {% if request.user.is_superuser %}
+                                <li><a href="{% url 'admin:index' %}">Site Administration</a></li>
+                                <li role="separator" class="divider"></li>
+                            {% endif %}
+
+                        <li class="dropdown-header">{{ request.user.email }}</li>
+
+                        <li>
+                            <a href="{% url 'hc-profile' %}">Account Settings</a>
+                        </li>
+                        <li>
+                            <form method="post" action="{% url 'hc-logout' %}">
+                                {% csrf_token %}
+                                <button class="btn btn-link" type="submit">Log Out</button>
+                            </form>
+                        </li>
+                        </ul>
+                    </li>
+                    {% elif page != "login" %}
+                    <li>
+                        <a href="{% url 'hc-login' %}">Sign In</a>
+                    </li>
+                    {% endif %}
 
                 {% if registration_open %}
                 {% if page == "welcome" or page == "login" %}
@@ -199,6 +202,8 @@
                 {% endif %}
                 {% endif %}
             </ul>
+                </li>
+            
         </div>
 
         </div>
@@ -210,6 +215,7 @@
     </div>
     {% endblock %}
 
+    {% if show_footer %}
     <footer class="footer">
         <div class="container{% if page == "checks" or page == "details" or page == "log" %}-fluid{% endif %}">
             <ul>
@@ -221,7 +227,7 @@
             </ul>
         </div>
     </footer>
-    
+    {% endif %}
     {% block base_modals %}{% endblock %}
 
     {% if request.user.is_authenticated and request.profile.theme == 'system' %}

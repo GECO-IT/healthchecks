@@ -180,6 +180,16 @@ def _get_project_for_user(request: HttpRequest, code: UUID) -> tuple[Project, bo
 
     return project, membership.is_rw
 
+def _get_true_rw_project_for_user(request: HttpRequest, project) -> Project:
+    """Check access, return true_rw)"""
+    if request.user.is_superuser:
+        return False
+
+    if request.user.id == project.owner_id:
+        return False
+
+    membership = get_object_or_404(Member, project=project, user=request.user)
+    return membership.is_true_rw
 
 def _get_rw_project_for_user(request: HttpRequest, code: UUID) -> Project:
     """Check access, return (project, rw) tuple."""
@@ -380,25 +390,28 @@ def index(request: HttpRequest) -> HttpResponse:
         if summary[project.code]["status"] == "down":
             any_down = True
 
+    true_rw = False
+    for p in request.profile.projects():
+        if _get_true_rw_project_for_user(request, p):
+            true_rw = True
     # The list returned by projects() is already sorted . Do an additional sorting pass
     # to move projects with overall_status=down to the front (without changing their
     # relative order)
     projects.sort(key=lambda p: getattr(p, "overall_status") != "down")
-
     ctx = {
         "page": "projects",
         "projects": projects,
+        "true_rw": true_rw,
         "last_project_id": request.session.get("last_project_id"),
         "any_down": any_down,
     }
 
     return render(request, "front/projects.html", ctx)
 
-
 @login_required
 def projects_menu(request: AuthenticatedHttpRequest) -> HttpResponse:
     projects = list(request.profile.projects())
-
+    true_rw = False
     statuses: dict[int, str] = defaultdict(lambda: "up")
     for check in Check.objects.filter(project__in=projects):
         old_status = statuses[check.project_id]
@@ -406,12 +419,12 @@ def projects_menu(request: AuthenticatedHttpRequest) -> HttpResponse:
             status = check.get_status()
             if status == "down" or (status == "grace" and old_status == "up"):
                 statuses[check.project_id] = status
-
     for p in projects:
         setattr(p, "overall_status", statuses[p.id])
+        if _get_true_rw_project_for_user(request, p):
+            true_rw = True
 
-    return render(request, "front/projects_menu.html", {"projects": projects})
-
+    return render(request, "front/projects_menu.html", {"projects": projects,"true_rw": true_rw})
 
 def dashboard(request: HttpRequest) -> HttpResponse:
     return render(request, "front/dashboard.html", {})
@@ -1210,6 +1223,7 @@ def channels(request: AuthenticatedHttpRequest, code: UUID) -> HttpResponse:
         "enable_whatsapp": settings.TWILIO_USE_WHATSAPP,
         "enable_zulip": settings.ZULIP_ENABLED is True,
         "use_payments": settings.USE_PAYMENTS,
+        "show_doc": settings.SHOW_DOC,
     }
 
     return render(request, "front/channels.html", ctx)

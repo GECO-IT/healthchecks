@@ -14,6 +14,7 @@ $(function() {
             timeout: 2000,
             success: function(data) {
                 $("#project-menu li.project-item").remove();
+                $("#project-menu .new_project").remove();
                 $("#projects-divider").after(data);
             }
         });

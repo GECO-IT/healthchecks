@@ -142,6 +142,7 @@ class Profile(models.Model):
             "button_text": "Sign In",
             "button_url": settings.SITE_ROOT + path,
             "membership": membership,
+            "show_doc": settings.SHOW_DOC,
         }
         emails.login(self.user.email, ctx)
 
@@ -466,6 +467,7 @@ class Project(models.Model):
 
 class Member(models.Model):
     class Role(models.TextChoices):
+        TRUEREADONLY = "t", "True Read-only"
         READONLY = "r", "Read-only"
         REGULAR = "w", "Member"
         MANAGER = "m", "Manager"
@@ -488,7 +490,9 @@ class Member(models.Model):
     @property
     def is_rw(self) -> bool:
         return self.role in (Member.Role.REGULAR, Member.Role.MANAGER)
-
+    @property
+    def is_true_rw(self) -> bool:
+        return self.role in (Member.Role.TRUEREADONLY)
 
 class Credential(models.Model):
     code = models.UUIDField(default=uuid.uuid4, unique=True)
