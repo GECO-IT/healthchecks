@@ -301,7 +301,16 @@ def check_token(
 @login_required
 def profile(request: AuthenticatedHttpRequest) -> HttpResponse:
     profile = request.profile
-
+    true_rw = False 
+    if not request.user.is_superuser:
+        for p in request.profile.projects():
+            member = get_object_or_404(Member, project=p, user=request.user)
+            if request.user.id == p.owner_id:
+                true_rw = False
+                break
+            if member.is_true_rw:
+                true_rw = True
+                break
     ctx = {
         "page": "profile",
         "profile": profile,
@@ -313,6 +322,7 @@ def profile(request: AuthenticatedHttpRequest) -> HttpResponse:
         "disabled_totp": request.session.pop("disabled_totp", False),
         "credentials": list(request.user.credentials.order_by("id")),
         "use_webauthn": settings.RP_ID,
+        "true_rw": true_rw,
     }
 
     if ctx["added_credential_name"] or ctx["enabled_totp"]:
@@ -339,6 +349,7 @@ def profile(request: AuthenticatedHttpRequest) -> HttpResponse:
 
     ctx["ownerships"] = request.user.project_set.order_by(Lower("name"))
     ctx["memberships"] = request.user.memberships.order_by(Lower("project__name"))
+    
     return render(request, "accounts/profile.html", ctx)
 
 
